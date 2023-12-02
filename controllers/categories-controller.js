@@ -51,7 +51,7 @@ function getCategory(req, res) {
   if (isNaN(categoryID)) return res.sendStatus(400);
 
   categoryService.getCategoryById(categoryID).then((category) => {
-    if (!category) return res.sendStatus(404);
+    if (!category) return res.sendStatus(500);
     return res.status(200).json(category);
   });
 }
@@ -74,6 +74,8 @@ function getAllCategories(req, res) {
   });
 }
 
+function searchCategory(req, res) {}
+
 module.exports = {
   createCategory,
   updateCategory,
@@ -81,4 +83,5 @@ module.exports = {
   getCategory,
   getPostsByCategory,
   getAllCategories,
+  searchCategory,
 };

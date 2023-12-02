@@ -14,8 +14,11 @@ async function validateRegData(user) {
     dataValidator.checkFullNameLen(fullName) == ValidationResult.INVALID ||
     dataValidator.checkIfFullNameIsValid(fullName) ==
       ValidationResult.INVALID ||
-    (await dataValidator.checkIfUserExistByEmailAndLogin(login, email)) ==
-      ValidationResult.INVALID
+    //(await dataValidator.checkIfUserExistByEmailAndLogin(login, email)) ==
+    //  ValidationResult.INVALID
+    (await dataValidator.checkIfEmailExist(email)) ==
+      ValidationResult.INVALID ||
+    (await dataValidator.checkIfLoginExist(login)) == ValidationResult.INVALID
   )
     return ValidationResult.INVALID;
   return ValidationResult.VALID;

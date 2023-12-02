@@ -10,13 +10,13 @@ const registration = (req, res) => {
   userService.registerUser(req.body).then((result) => {
     if (result.status != 200)
       return res.status(result.status).json({ message: result.message });
-    else return res.sendStatus(200);
+    else return res.status(200).json({});
   });
 };
 
 const login = (req, res) => {
-  const { login, email, password } = req.body;
-  if (!login || !email || !password) return res.status(400).send();
+  const { login, password } = req.body;
+  if (!login || !password) return res.status(400).send();
 
   userService.findUserByLogin(login).then((user) => {
     if (!user)
@@ -33,10 +33,10 @@ const login = (req, res) => {
         .status(401)
         .json({ message: "You should confirm your email first" });
 
-    if (user.user_email !== email)
-      return res
-        .status(401)
-        .json({ message: "Some credentials are not valid" });
+    // if (user.user_email !== email)
+    //   return res
+    //     .status(401)
+    //     .json({ message: "Some credentials are not valid" });
 
     bcrypt.compare(password, user.user_password, (err, result) => {
       if (err) {
@@ -84,6 +84,8 @@ const login = (req, res) => {
                   });
                   res.status(200).json({
                     accessToken: accessToken,
+                    role: user.user_role,
+                    id: user.id,
                   });
                 }
               });

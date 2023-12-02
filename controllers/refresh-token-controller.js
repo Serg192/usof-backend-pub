@@ -37,6 +37,8 @@ function handleRefreshToken(req, res) {
           });
           res.status(200).json({
             accessToken: accessToken,
+            role: user.user_role,
+            id: user.id,
           });
         }
       );

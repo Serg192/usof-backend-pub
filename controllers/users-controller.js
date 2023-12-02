@@ -46,7 +46,6 @@ async function createUser(req, res) {
         })
         .then((r) => {
           if (!r) {
-            console.log("HERE: ", r);
             return res.sendStatus(500);
           } else {
             return res.sendStatus(200);
@@ -57,7 +56,6 @@ async function createUser(req, res) {
 }
 
 function uploadAvatar(req, res) {
-  console.log("KKL");
   try {
     if (!req.file) {
       return res.sendStatus(400);
@@ -100,9 +98,8 @@ async function updateUserData(req, res) {
 
     const userRole = req.user.userRole;
 
-    if (userRole === ROLES_LIST.User && req.user.userId != req.params.user_id) {
+    if (userRole === ROLES_LIST.User && req.user.userId != req.params.user_id)
       return res.sendStatus(401);
-    }
 
     if (userRole === ROLES_LIST.Admin) {
       if (!role || !(role == ROLES_LIST.Admin || role == ROLES_LIST.User))
@@ -141,18 +138,10 @@ async function updateUserData(req, res) {
 function deleteUser(req, res) {
   try {
     const eUserID = parseInt(req.params.user_id);
-    const userRole = req.user.userRole;
+    const userRole = req.user.role;
 
-    console.log(
-      "USER ROLE: ",
-      userRole,
-      " edit user id: ",
-      eUserID,
-      " USER_ID: ",
-      req.user.userId
-    );
     //User can't delete other users
-    if (userRole === ROLES_LIST.User && eUserID != req.user.userId)
+    if (userRole === ROLES_LIST.User && eUserID != req.params.user_id)
       return res.sendStatus(401);
 
     userService

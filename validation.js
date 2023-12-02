@@ -41,14 +41,19 @@ const dataValidator = {
   },
 
   checkIfPasswdIsStrong: (password) => {
+    console.log("Password is: ", password);
+    const passReg =
+      /^(?=.*[A-Z].*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9].*[0-9]).{8,}$/;
     if (
-      !validator.isStrongPassword(password, {
-        minLength: process.env.MIN_PASSWORD_LEN,
-        minUppercase: process.env.MIN_PASSWORD_UPCASE,
-        minNumbers: process.env.MIN_PASSWORD_NUMS,
-        minSymbols: process.env.MIN_PASSWORD_SCHARS,
-      })
+      // !validator.isStrongPassword(password, {
+      //   minLength: parseInt(process.env.MIN_PASSWORD_LEN),
+      //   minUppercase: parseInt(process.env.MIN_PASSWORD_UPCASE),
+      //   minNumbers: parseInt(process.env.MIN_PASSWORD_NUMS),
+      //   minSymbols: parseInt(process.env.MIN_PASSWORD_SCHARS),
+      // })
+      !passReg.test(password)
     ) {
+      console.log("It's weak");
       ValidationResult.INVALID.msg = `"The password must be at least ${process.env.MIN_PASSWORD_LEN} characters long, contain at least ${process.env.MIN_PASSWORD_UPCASE} uppercase letters, at least ${process.env.MIN_PASSWORD_NUMS} numbers, and at least ${process.env.MIN_PASSWORD_SCHARS} special characters."`;
       return ValidationResult.INVALID;
     }
@@ -94,6 +99,19 @@ const dataValidator = {
     const userInDB = await userService.findUserByLogin(newLogin);
     if (!userInDB || userInDB.id == userID) return ValidationResult.VALID;
     ValidationResult.INVALID.msg = "This login is already used by other user!";
+    return ValidationResult.INVALID;
+  },
+
+  checkIfLoginExist: async (login) => {
+    const userInDB = await userService.findUserByLogin(login);
+    if (!userInDB) return ValidationResult.VALID;
+    ValidationResult.INVALID.msg = "This login is already used by other user!";
+    return ValidationResult.INVALID;
+  },
+  checkIfEmailExist: async (email) => {
+    const userInDB = await userService.findUserByEmail(email);
+    if (!userInDB) return ValidationResult.VALID;
+    ValidationResult.INVALID.msg = "This email is already used by other user!";
     return ValidationResult.INVALID;
   },
 };
