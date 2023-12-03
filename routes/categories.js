@@ -8,6 +8,7 @@ const {
   getCategory,
   getPostsByCategory,
   getAllCategories,
+  searchCategories,
 } = require("../controllers/categories-controller");
 
 const verifyJWTMid = require("../middleware/verify-jwt");
@@ -25,6 +26,8 @@ router.get(
   }),
   getPostsByCategory
 );
+
+router.get("/search", searchCategories);
 
 router.get("/", getAllCategories);
 router.get("/:category_id", getCategory);

@@ -65,7 +65,7 @@ function updComment(req, res) {
 function deleteComment(req, res) {
   const commentID = parseInt(req.params.comment_id, 10);
   const userId = req.user.userId;
-  if (isNaN(commentID)) return res.sendStatus(400);
+  if (isNaN(commentID)) return res.status(400).json({});
 
   commentsService.getCommentById(commentID).then((comment) => {
     if (!comment) return res.sendStatus(404);
@@ -74,7 +74,7 @@ function deleteComment(req, res) {
     }
     commentsService.deleteComment(commentID).then((ok) => {
       if (!ok) return res.sendStatus(500);
-      return res.sendStatus(200);
+      return res.status(200).json({});
     });
   });
 }

@@ -45,8 +45,30 @@ module.exports = (sequelize, DataTypes) => {
     Posts.hasMany(models.Comments, {
       as: "post_comments",
     });
+    // Posts.hasMany(models.Likes, {
+    //   as: "post_likes",
+    // });
+
     Posts.hasMany(models.Likes, {
       as: "post_likes",
+      foreignKey: "post_id",
+      attributes: [
+        [
+          sequelize.fn(
+            "SUM",
+            sequelize.literal("CASE WHEN like_type = true THEN 1 ELSE 0 END")
+          ),
+          "like_count",
+        ],
+        [
+          sequelize.fn(
+            "SUM",
+            sequelize.literal("CASE WHEN like_type = false THEN 1 ELSE 0 END")
+          ),
+          "dislike_count",
+        ],
+      ],
+      group: ["Posts.id"],
     });
   };
 

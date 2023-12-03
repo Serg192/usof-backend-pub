@@ -46,6 +46,28 @@ function getDefaultSortByForModel(model) {
   }
 }
 
+// function initSelectOptionsForModel(model) {
+//   switch (model) {
+//     case db.Posts:
+//       return {
+//         include: [
+//           {
+//             model: db.Users,
+//             as: "post_author",
+//             attributes: ["id"],
+//           },
+//           {
+//             model: db.Categories,
+//             as: "post_categories",
+//             attributes: ["id"],
+//           },
+//         ],
+//         where: {},
+//       };
+//     default:
+//       return null;
+//   }
+// }
 function initSelectOptionsForModel(model) {
   switch (model) {
     case db.Posts:
@@ -54,12 +76,16 @@ function initSelectOptionsForModel(model) {
           {
             model: db.Users,
             as: "post_author",
-            attributes: ["id"],
+            attributes: ["id", "user_login", "user_profile_picture"],
           },
           {
             model: db.Categories,
             as: "post_categories",
-            attributes: ["id"],
+            attributes: ["id", "category_title", "category_description"],
+          },
+          {
+            model: db.Likes,
+            as: "post_likes",
           },
         ],
         where: {},

@@ -37,7 +37,7 @@ function createPostComment(req, res) {
   const { commentText } = req.body;
 
   if (isNaN(postId) || !commentText) {
-    return res.sendStatus(400);
+    return res.status(400).json({});
   }
 
   postService
@@ -48,7 +48,7 @@ function createPostComment(req, res) {
     .then((comment) => {
       if (!comment)
         return res.status(500).json({ message: "Failed to create comment" });
-      return res.sendStatus(200);
+      return res.status(200).json({});
     });
 }
 
@@ -91,8 +91,8 @@ function createNewPost(req, res) {
       content,
       categoryIds
     )
-    .then(() => {
-      res.sendStatus(200);
+    .then((post) => {
+      res.status(200).json({ post });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });

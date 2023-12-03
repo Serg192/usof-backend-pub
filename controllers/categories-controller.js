@@ -74,7 +74,18 @@ function getAllCategories(req, res) {
   });
 }
 
-function searchCategory(req, res) {}
+function searchCategories(req, res) {
+  console.log("SEARCH CATEGORY");
+  const pattern = req.query.pattern;
+
+  if (!pattern) return res.sendStatus(400);
+
+  categoryService.searchByTitle(pattern).then((result) => {
+    if (!result) return res.sendStatus(404);
+
+    return res.status(200).json({ data: result });
+  });
+}
 
 module.exports = {
   createCategory,
@@ -83,5 +94,5 @@ module.exports = {
   getCategory,
   getPostsByCategory,
   getAllCategories,
-  searchCategory,
+  searchCategories,
 };

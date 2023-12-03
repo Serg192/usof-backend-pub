@@ -57,7 +57,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/auth/", authRoute);
-app.use("/api/users/", verifyJWTMid, usersRoute);
+app.use("/api/users/", usersRoute);
 app.use("/api/posts/", postsRoute);
 app.use("/api/categories", categories);
 app.use("/api/comments", comments);

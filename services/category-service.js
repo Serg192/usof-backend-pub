@@ -132,6 +132,22 @@ const categoryService = {
       return null;
     }
   },
+
+  searchByTitle: async (pattern) => {
+    try {
+      const categories = await db.Categories.findAll({
+        where: {
+          category_title: {
+            [db.Sequelize.Op.like]: `%${pattern}%`,
+          },
+        },
+      });
+      return categories;
+    } catch (error) {
+      console.error("Error finding categories by pattern:", error);
+      return [];
+    }
+  },
 };
 
 module.exports = categoryService;

@@ -34,6 +34,11 @@ const postService = {
             model: db.Categories,
             as: "post_categories",
           },
+          {
+            model: db.Users,
+            as: "post_author",
+            attributes: ["id", "user_login", "user_profile_picture"],
+          },
         ],
       });
 
@@ -76,7 +81,24 @@ const postService = {
   getAllCommentsForPost: async (postId) => {
     try {
       const post = await db.Posts.findByPk(postId, {
-        include: [{ model: db.Comments, as: "post_comments" }],
+        include: [
+          {
+            model: db.Comments,
+            as: "post_comments",
+            include: [
+              {
+                model: db.Users,
+                as: "comment_author",
+                attributes: [
+                  "id",
+                  "user_login",
+                  "user_profile_picture",
+                  "user_rating",
+                ],
+              },
+            ],
+          },
+        ],
       });
 
       if (!post) {
