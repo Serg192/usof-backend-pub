@@ -75,6 +75,7 @@ function initSelectOptionsForModel(model) {
     case db.Users:
       return {
         attributes: [
+          "id",
           "user_login",
           "user_role",
           "user_rating",
@@ -124,6 +125,33 @@ function configureFilterOption(selectOptions, model, req) {
   }
 }
 
+function configureSearchOption(selectOptions, model, req) {
+  switch (model) {
+    case db.Posts:
+      const pattern = req.query.search;
+      if (!pattern || pattern.length === 0) return selectOptions;
+      // selectOptions.where = {
+      //   post_title: {
+      //     [db.Sequelize.Op.like]: `%${pattern}%`,
+      //   },
+      // };
+
+      //experimental feature
+      const keywords = pattern.split(" ");
+
+      selectOptions.where = {
+        [db.Sequelize.Op.or]: keywords.map((keyword) => ({
+          post_title: {
+            [db.Sequelize.Op.like]: `%${keyword}%`,
+          },
+        })),
+      };
+      return selectOptions;
+    default:
+      return selectOptions;
+  }
+}
+
 function prepareSelectOptions(model) {
   return async (req, res, next) => {
     if (!supportedModels.has(model)) return res.sendStatus(501);
@@ -143,6 +171,7 @@ function prepareSelectOptions(model) {
         sortOrder
       );
       selectOptions = configureFilterOption(selectOptions, model, req);
+      selectOptions = configureSearchOption(selectOptions, model, req);
       if (selectOptions == null) return res.sendStatus(501);
       res.selectOptions = selectOptions;
       next();
