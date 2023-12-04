@@ -10,6 +10,53 @@ const postService = {
       return null;
     }
   },
+  getAllPostsByUserId: async (userId) => {
+    try {
+      const posts = await db.Posts.findAll({
+        attributes: [
+          "id",
+          "post_title",
+          "post_publish_date",
+          "post_content",
+          [
+            db.Sequelize.literal(
+              `(SELECT COUNT(*) FROM likes WHERE likes.post_id = Posts.id AND likes.like_type = true)`
+            ),
+            "like_count",
+          ],
+        ],
+        where: {
+          user_id: userId,
+        },
+        include: [
+          {
+            model: db.Users,
+            as: "post_author",
+            attributes: ["id", "user_login", "user_profile_picture"],
+          },
+          {
+            model: db.Categories,
+            as: "post_categories",
+            attributes: ["id", "category_title", "category_description"],
+          },
+          {
+            model: db.Likes,
+            as: "post_likes",
+          },
+          {
+            model: db.Comments,
+            as: "post_comments",
+          },
+        ],
+      });
+
+      return posts;
+    } catch (error) {
+      console.error("Error fetching posts by user ID:", error);
+      return null;
+    }
+  },
+
   findPostByField: async (field, value) => {
     try {
       const post = await db.Posts.findOne({

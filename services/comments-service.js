@@ -41,25 +41,22 @@ const commentsService = {
         },
       });
 
-      if (commentLikes.length === 0) {
-        return {
-          likesCount: 0,
-          dislikesCount: 0,
-          commentLikes: [],
-        };
-      }
+      // if (commentLikes.length === 0) {
+      //   return {
+      //     likesCount: 0,
+      //     dislikesCount: 0,
+      //     commentLikes: [],
+      //   };
+      // }
 
-      const likesCount = commentLikes.filter(
-        (like) => like.like_type === true
-      ).length;
-      const dislikesCount = commentLikes.filter(
-        (like) => like.like_type === false
-      ).length;
+      // const likesCount = commentLikes.filter(
+      //   (like) => like.like_type === true
+      // ).length;
+      // const dislikesCount = commentLikes.filter(
+      //   (like) => like.like_type === false
+      // ).length;
 
-      return {
-        likesCount,
-        dislikesCount,
-      };
+      return commentLikes;
     } catch (error) {
       console.error("Error fetching likes under comment:", error.message);
       return null;

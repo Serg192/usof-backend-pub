@@ -100,6 +100,7 @@ function createNewPost(req, res) {
 }
 
 function createLikeUnderPost(req, res) {
+  console.log("LIKE UNDER POST: ", req.body);
   const postId = parseInt(req.params.post_id, 10);
   let type = req.body.type;
 
@@ -116,7 +117,7 @@ function createLikeUnderPost(req, res) {
     .createOrUpdateLike(parseInt(req.user.userId), postId, type)
     .then((ok) => {
       if (!ok) return res.sendStatus(500);
-      return res.sendStatus(200);
+      return res.status(200).json({});
     });
 }
 
@@ -171,12 +172,12 @@ function deletePostLike(req, res) {
   const postId = parseInt(req.params.post_id, 10);
 
   if (isNaN(postId)) {
-    return res.sendStatus(400);
+    return res.status(400).json({});
   }
 
   postService.deletePostLike(parseInt(req.user.userId), postId).then((ok) => {
     if (!ok) return res.sendStatus(500);
-    return res.sendStatus(200);
+    return res.status(200).json({});
   });
 }
 

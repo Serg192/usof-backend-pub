@@ -5,15 +5,18 @@ const { dataValidator, ValidationResult } = require("../validation");
 const UserDTO = require("../dto/UserDTO");
 const ROLES_LIST = require("../config/roles-list");
 const userService = require("../services/user-service");
+const postService = require("../services/post-service");
 
 function getAllUsers(req, res) {
-  userService.getAllUsers().then((users) => {
-    if (!users)
-      return res.status(500).json({ message: "Error fetching users" });
+  console.log("Controller ");
+  return res.json(res.items_json);
+  // userService.getAllUsers().then((users) => {
+  //   if (!users)
+  //     return res.status(500).json({ message: "Error fetching users" });
 
-    let usersJSON = users.map((user) => new UserDTO(user));
-    res.json(usersJSON);
-  });
+  //   let usersJSON = users.map((user) => new UserDTO(user));
+  //   res.json(usersJSON);
+  // });
 }
 
 function getUser(req, res) {
@@ -79,7 +82,7 @@ function uploadAvatar(req, res) {
               process.env.FILE_UPLOAD_PATH + `/${user.user_profile_picture}`
             );
           }
-          return res.sendStatus(200);
+          return res.status(200).json({});
         });
     });
   } catch (error) {
@@ -160,6 +163,17 @@ function deleteUser(req, res) {
   }
 }
 
+function getUserPosts(req, res) {
+  const userId = parseInt(req.params.user_id);
+
+  if (!userId) return res.status(404).json({});
+
+  postService.getAllPostsByUserId(userId).then((posts) => {
+    if (!posts) return res.status(404).json({});
+    return res.status(200).json(posts);
+  });
+}
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -167,4 +181,5 @@ module.exports = {
   uploadAvatar,
   updateUserData,
   deleteUser,
+  getUserPosts,
 };

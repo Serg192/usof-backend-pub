@@ -26,6 +26,7 @@ function getAllLikesUnderComment(req, res) {
 }
 
 function likeComment(req, res) {
+  console.log("LIKE COMMENT: ", req.body);
   const commentID = parseInt(req.params.comment_id, 10);
   let type = req.body.type;
 

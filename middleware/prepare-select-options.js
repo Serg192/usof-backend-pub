@@ -1,6 +1,6 @@
 const db = require("../models");
 
-const supportedModels = new Set([db.Posts]);
+const supportedModels = new Set([db.Posts, db.Users]);
 
 const defaultSortOptionForPosts = "post_likes";
 
@@ -46,28 +46,6 @@ function getDefaultSortByForModel(model) {
   }
 }
 
-// function initSelectOptionsForModel(model) {
-//   switch (model) {
-//     case db.Posts:
-//       return {
-//         include: [
-//           {
-//             model: db.Users,
-//             as: "post_author",
-//             attributes: ["id"],
-//           },
-//           {
-//             model: db.Categories,
-//             as: "post_categories",
-//             attributes: ["id"],
-//           },
-//         ],
-//         where: {},
-//       };
-//     default:
-//       return null;
-//   }
-// }
 function initSelectOptionsForModel(model) {
   switch (model) {
     case db.Posts:
@@ -87,8 +65,21 @@ function initSelectOptionsForModel(model) {
             model: db.Likes,
             as: "post_likes",
           },
+          {
+            model: db.Comments,
+            as: "post_comments",
+          },
         ],
         where: {},
+      };
+    case db.Users:
+      return {
+        attributes: [
+          "user_login",
+          "user_role",
+          "user_rating",
+          "user_profile_picture",
+        ],
       };
     default:
       return null;
@@ -96,21 +87,22 @@ function initSelectOptionsForModel(model) {
 }
 
 function configureSortOptions(selectOptions, model, sortBy, sortOrder) {
+  selectOptions.attributes = [
+    "id",
+    "post_title",
+    "post_publish_date",
+    "post_content",
+    [
+      db.sequelize.literal(
+        `(SELECT COUNT(*) FROM likes WHERE likes.post_id = Posts.id AND likes.like_type = true)`
+      ),
+      "like_count",
+    ],
+  ];
+
   switch (model) {
     case db.Posts: {
       if (sortBy === defaultSortOptionForPosts) {
-        selectOptions.attributes = [
-          "id",
-          "post_title",
-          "post_publish_date",
-          "post_content",
-          [
-            db.sequelize.literal(
-              `(SELECT COUNT(*) FROM likes WHERE likes.post_id = Posts.id AND likes.like_type = true)`
-            ),
-            "like_count",
-          ],
-        ];
         selectOptions.order = [[db.sequelize.literal("like_count"), sortOrder]];
       } else {
         selectOptions.order = [[sortBy, sortOrder]];
@@ -136,19 +128,25 @@ function prepareSelectOptions(model) {
   return async (req, res, next) => {
     if (!supportedModels.has(model)) return res.sendStatus(501);
 
-    const sortOrder = req.query.sortOrder || "DESC";
-    const sortBy = req.query.sortBy || getDefaultSortByForModel(model);
-    let selectOptions = initSelectOptionsForModel(model);
-    selectOptions = configureSortOptions(
-      selectOptions,
-      model,
-      sortBy,
-      sortOrder
-    );
-    selectOptions = configureFilterOption(selectOptions, model, req);
-    if (selectOptions == null) return res.sendStatus(501);
-    res.selectOptions = selectOptions;
-    next();
+    //quick hack
+    if (model === db.Users) {
+      res.selectOptions = initSelectOptionsForModel(model);
+      next();
+    } else {
+      const sortOrder = req.query.sortOrder || "DESC";
+      const sortBy = req.query.sortBy || getDefaultSortByForModel(model);
+      let selectOptions = initSelectOptionsForModel(model);
+      selectOptions = configureSortOptions(
+        selectOptions,
+        model,
+        sortBy,
+        sortOrder
+      );
+      selectOptions = configureFilterOption(selectOptions, model, req);
+      if (selectOptions == null) return res.sendStatus(501);
+      res.selectOptions = selectOptions;
+      next();
+    }
   };
 }
 

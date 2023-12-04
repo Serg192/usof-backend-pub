@@ -7,6 +7,10 @@ const verifyRoles = require("../middleware/verify-roles");
 const verifyJWTMid = require("../middleware/verify-jwt");
 const authRegDataValidationMid = require("../middleware/auth-reg-data-validation");
 const upload = require("../middleware/file-upload");
+const prepareSelectOptions = require("../middleware/prepare-select-options");
+
+const db = require("../models");
+const pagination = require("../middleware/pagination");
 
 const {
   getAllUsers,
@@ -15,9 +19,15 @@ const {
   uploadAvatar,
   updateUserData,
   deleteUser,
+  getUserPosts,
 } = require("../controllers/users-controller");
 
-router.get("/", getAllUsers);
+router.get(
+  "/",
+  prepareSelectOptions(db.Users),
+  pagination(db.Users),
+  getAllUsers
+);
 router.post(
   "/",
   verifyJWTMid,
@@ -27,6 +37,8 @@ router.post(
 );
 router.get("/:user_id", getUser);
 router.patch("/avatar", verifyJWTMid, upload.single("image"), uploadAvatar);
+
+router.get("/:user_id/posts", getUserPosts);
 
 //user can change his login and fullname, admin can change user role. If you want
 //to change avatar picture use different endpoint
