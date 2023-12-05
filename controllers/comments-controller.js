@@ -37,12 +37,18 @@ function likeComment(req, res) {
     return res.sendStatus(400);
   }
 
-  commentsService
-    .createLikeUnderComment(commentID, parseInt(req.user.userId), type)
-    .then((ok) => {
-      if (!ok) return res.sendStatus(500);
-      return res.sendStatus(200);
-    });
+  commentsService.getCommentById(commentID).then((comment) => {
+    if (comment.user_id == parseInt(req.user.userId)) {
+      return res.status(500).json({});
+    } else {
+      commentsService
+        .createLikeUnderComment(commentID, parseInt(req.user.userId), type)
+        .then((ok) => {
+          if (!ok) return res.sendStatus(500);
+          return res.status(200).json({});
+        });
+    }
+  });
 }
 
 function updComment(req, res) {

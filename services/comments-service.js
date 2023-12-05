@@ -152,6 +152,17 @@ const commentsService = {
         throw new Error("Comment not found");
       }
 
+      let likes = 0;
+      commentToDelete.comment_likes.map((l) => {
+        if (l.like_type) likes++;
+      });
+
+      let user = await db.Users.findByPk(commentToDelete.user_id);
+      if (user) {
+        user.user_rating -= likes;
+        await user.save();
+      }
+
       await Promise.all(
         commentToDelete.comment_likes.map((like) => like.destroy())
       );
@@ -182,6 +193,12 @@ const commentsService = {
       await likeToDelete.destroy();
 
       console.log("Like deleted successfully");
+
+      let user = await db.Users.findByPk(userId);
+      if (user) {
+        user.user_rating -= 1;
+        await user.save();
+      }
 
       return true;
     } catch (error) {

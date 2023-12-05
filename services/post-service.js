@@ -338,6 +338,19 @@ const postService = {
         throw new Error("Post not found");
       }
 
+      const userId = postToDelete.user_id;
+
+      let likes = 0;
+      postToDelete.post_likes.map((l) => {
+        if (l.like_type) likes++;
+      });
+
+      let user = await db.Users.findByPk(userId);
+      if (user) {
+        user.user_rating -= likes;
+        await user.save();
+      }
+
       await db.Likes.destroy({ where: { post_id: postId } });
 
       for (const comment of postToDelete.post_comments) {

@@ -13,6 +13,7 @@ const {
 
 const verifyJWTMid = require("../middleware/verify-jwt");
 const pagination = require("../middleware/pagination");
+const prepareSelectOptions = require("../middleware/prepare-select-options");
 const db = require("../models");
 
 //This is deprecated and does not support sorting and filtering
@@ -29,7 +30,12 @@ router.get(
 
 router.get("/search", searchCategories);
 
-router.get("/", getAllCategories);
+router.get(
+  "/",
+  prepareSelectOptions(db.Categories),
+  pagination(db.Categories),
+  getAllCategories
+);
 router.get("/:category_id", getCategory);
 router.post("/", verifyJWTMid, createCategory);
 router.patch("/:category_id", verifyJWTMid, updateCategory);

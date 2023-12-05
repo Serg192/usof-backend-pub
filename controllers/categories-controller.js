@@ -68,10 +68,12 @@ function getPostsByCategory(req, res) {
 }
 
 function getAllCategories(req, res) {
-  categoryService.getAllCategories().then((categories) => {
-    if (!categories) return res.sendStatus(500);
-    return res.status(200).json(categories);
-  });
+  return res.json(res.items_json);
+  // console.log(res.items_json);
+  // categoryService.getAllCategories().then((categories) => {
+  //   if (!categories) return res.sendStatus(500);
+  //   return res.status(200).json(categories);
+  // });
 }
 
 function searchCategories(req, res) {

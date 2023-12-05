@@ -127,7 +127,7 @@ const sendPasswordResetLink = (req, res) => {
         html: `Please follow this link to to reset your password: <a href="http://localhost:4545/api/auth/password-reset/${resetPasswordToken}">Reset password</a>`,
       })
     );
-    return res.sendStatus(200);
+    return res.status(200).json({});
   });
 };
 
@@ -140,13 +140,17 @@ const sendPasswordResetForm = (req, res) => {
 
 const resetPassword = (req, res) => {
   const { password } = req.body;
+
+  const passReg =
+    /^(?=.*[A-Z].*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9].*[0-9]).{8,}$/;
   if (
-    !validator.isStrongPassword(password, {
-      minLength: process.env.MIN_PASSWORD_LEN,
-      minUppercase: process.env.MIN_PASSWORD_UPCASE,
-      minNumbers: process.env.MIN_PASSWORD_NUMS,
-      minSymbols: process.env.MIN_PASSWORD_SCHARS,
-    })
+    // !validator.isStrongPassword(password, {
+    //   minLength: parseInt(process.env.MIN_PASSWORD_LEN),
+    //   minUppercase: parseInt(process.env.MIN_PASSWORD_UPCASE),
+    //   minNumbers: parseInt(process.env.MIN_PASSWORD_NUMS),
+    //   minSymbols: parseInt(process.env.MIN_PASSWORD_SCHARS),
+    // })
+    !passReg.test(password)
   ) {
     return res.json({
       message: `"The password must be at least ${process.env.MIN_PASSWORD_LEN} characters long, contain at least ${process.env.MIN_PASSWORD_UPCASE} uppercase letters, at least ${process.env.MIN_PASSWORD_NUMS} numbers, and at least ${process.env.MIN_PASSWORD_SCHARS} special characters."`,

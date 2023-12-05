@@ -113,12 +113,18 @@ function createLikeUnderPost(req, res) {
     return res.sendStatus(400);
   }
 
-  postService
-    .createOrUpdateLike(parseInt(req.user.userId), postId, type)
-    .then((ok) => {
-      if (!ok) return res.sendStatus(500);
-      return res.status(200).json({});
-    });
+  postService.findPostById(postId).then((post) => {
+    if (post.user_id == parseInt(req.user.userId)) {
+      return res.sendStatus(500);
+    } else {
+      postService
+        .createOrUpdateLike(parseInt(req.user.userId), postId, type)
+        .then((ok) => {
+          if (!ok) return res.sendStatus(500);
+          return res.status(200).json({});
+        });
+    }
+  });
 }
 
 function updatePost(req, res) {
@@ -140,7 +146,7 @@ function updatePost(req, res) {
       .updatePost(postId, title, new Date(), content, categoryIds)
       .then((ok) => {
         if (!ok) return res.sendStatus(500);
-        return res.sendStatus(200);
+        return res.status(200).json({ post: ok });
       });
   });
 }
@@ -163,7 +169,7 @@ function deletePost(req, res) {
 
     postService.deletePost(postId).then((ok) => {
       if (!ok) return res.sendStatus(500);
-      return res.sendStatus(200);
+      return res.status(200).json({});
     });
   });
 }
