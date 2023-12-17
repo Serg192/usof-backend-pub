@@ -21,32 +21,10 @@ const verifyJWTMid = require("./middleware/verify-jwt");
 const staticFilesDirectory = path.join(__dirname, "upload");
 app.use(express.static(staticFilesDirectory));
 
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   next();
-// });
-//app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-
-var whitelist = [
-  "http://localhost:*",
-  "http://localhost:4545",
-  "http://192.168.0.100:3000", // Replace with the actual IP addresses of your local network
-  "http://192.168.0.101:3000",
-  "http://192.168.0.102:3000" /** other domains if any */,
-];
 var corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
-    console.log("ORIGIN: ", origin);
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      //callback(new Error("Not allowed by CORS"));
-      callback(null, true);
-    }
+    callback(null, true);
   },
 };
 
